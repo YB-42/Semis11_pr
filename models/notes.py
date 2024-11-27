@@ -79,3 +79,4 @@ class NoteManager:
             for row in reader:
                 self.create_note(row["title"], row["content"])
         print(f"Заметка импортирована из {file_name}")
+#для переименования commit'a
