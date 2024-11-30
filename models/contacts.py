@@ -1,28 +1,3 @@
-"""import json
-
-CONTACTS_FILE = 'contacts.json'
-
-class Contact:
-    def __int__(self, id, name, phone, email):
-        self.id = id
-        self.name = name
-        self.phone = phone
-        self.email = email
-
-    def new_cont(self):
-
-    def find_contact(self, name, phone=None):
-
-    def edit_contact(self, name):
-
-    def del_contact(self):
-
-    def import_cont_to_csv(self):
-
-    def export_to_csv(self):
-
-    """
-
 import json
 import csv
 
