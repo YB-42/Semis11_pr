@@ -71,7 +71,7 @@ class Task:
 
     def del_task(self, id):
         tasks = self.load_tasks()
-        tasks = [task for task in tasks if task['id'] != id]  # Удаляем задачу с указанным id
+        tasks = [task for task in tasks if task['id'] != id]
         with open(TASKS_FILE, 'w') as file:
             json.dump(tasks, file, indent=4)
         print(f'Задача с ID {id} удалена.')
@@ -90,23 +90,26 @@ class Task:
         try:
             with open(csv_file, 'r') as file:
                 reader = csv.reader(file)
-                next(reader)  # Пропускаем заголовок
+                next(reader)
                 for row in reader:
                     print(
                         f"ID: {row[0]}, Title: {row[1]}, Description: {row[2]}, Done: {row[3]}, Priority: {row[4]}, Due Date: {row[5]}")
         except FileNotFoundError:
             print("CSV-файл не найден.")
 
-    # Пример использования:
+
 task1 = Task(1, "Первая задача", "Описание первой задачи.")
 task1.new_task()
 task2 = Task(2, "Вторая задача", "Описание второй задачи.", priority = 'Сложный')
 task2.new_task()
 task1.all_tasks()
-task1.task_is_done(1)  # Помечаем задачу с ID 1 как выполненную
+task1.task_is_done(1)
 task1.edit_task(1, description="Обновленное описание первой задачи.")
 task1.all_tasks()
-task1.del_task(2)  # Удаляем задачу
+task1.del_task(2)
+task1.del_task(1)
+task1.del_task(1)
+task1.all_tasks()
 
 
 
