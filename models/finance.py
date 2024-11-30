@@ -1,4 +1,3 @@
-# finance.py
 import json
 import csv
 from datetime import datetime
@@ -6,99 +5,101 @@ from datetime import datetime
 FINANCE_FILE = "finance.json"
 
 class FinanceRecord:
-    def __init__(self, id, amount, category, date, description):
+    def __init__(self, id, amount, category, date=None, description=""):
         self.id = id
         self.amount = amount
         self.category = category
-        self.date = date
+        self.date = date or datetime.now().strftime("%Y-%m-%d")
         self.description = description
 
-    def to_dict(self):
-        return {
+    def load_records(self):
+        try:
+            with open(FINANCE_FILE, 'r') as file:
+                return json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
+
+    def add_record(self):
+        records = self.load_records()
+        records.append({
             "id": self.id,
             "amount": self.amount,
             "category": self.category,
             "date": self.date,
             "description": self.description
-        }
-
-    @staticmethod
-    def from_dict(data):
-        return FinanceRecord(
-            data['id'],
-            float(data['amount']),
-            data['category'],
-            data['date'],
-            data['description']
-        )
-
-class FinanceManager:
-    def __init__(self):
-        self.records = self.load_records()
-
-    def load_records(self):
-        try:
-            with open(FINANCE_FILE, 'r') as file:
-                return [FinanceRecord.from_dict(record) for record in json.load(file)]
-        except FileNotFoundError:
-            return []
-
-    def save_records(self):
+        })
         with open(FINANCE_FILE, 'w') as file:
-            json.dump([record.to_dict() for record in self.records], file, indent=4)
+            json.dump(records, file, indent=4)
+        print('Фин. запись добавлена')
 
-    def add_record(self, amount, category, date, description):
-        new_id = max((record.id for record in self.records), default=0) + 1
-        new_record = FinanceRecord(new_id, amount, category, date, description)
-        self.records.append(new_record)
-        self.save_records()
-        print("Finance record added successfully.")
+    def view_records(self, start_date=None, end_date=None, category=None):
+        records = self.load_records()
+        filtered_records = []
 
-    def list_records(self):
-        print("\nFinance Records:")
-        for record in self.records:
-            print(f"ID: {record.id}, Amount: {record.amount}, Category: {record.category}, "
-                  f"Date: {record.date}, Description: {record.description}")
+        for record in records:
+            record_date = datetime.strptime(record['date'], "%Y-%m-%d")
+            if (start_date is None or record_date >= start_date) and \
+               (end_date is None or record_date <= end_date) and \
+               (category is None or record['category'] == category):
+                filtered_records.append(record)
 
-    def filter_records(self, by_category=None, by_date=None):
-        filtered = self.records
-        if by_category:
-            filtered = [record for record in filtered if record.category == by_category]
-        if by_date:
-            filtered = [record for record in filtered if record.date == by_date]
-        return filtered
+        for record in filtered_records:
+            print(record)
 
-    def generate_report(self, start_date=None, end_date=None):
+    def generate_report(self, start_date, end_date):
+        records = self.load_records()
         total_income = 0
         total_expense = 0
 
-        for record in self.records:
-            record_date = datetime.strptime(record.date, "%d-%m-%Y")
-            if start_date and record_date < datetime.strptime(start_date, "%d-%m-%Y"):
-                continue
-            if end_date and record_date > datetime.strptime(end_date, "%d-%m-%Y"):
-                continue
-            if record.amount > 0:
-                total_income += record.amount
-            else:
-                total_expense += record.amount
+        for record in records:
+            record_date = datetime.strptime(record['date'], "%Y-%m-%d")
+            if start_date <= record_date <= end_date:
+                if record['amount'] > 0:
+                    total_income += record['amount']
+                else:
+                    total_expense += record['amount']
 
-        print("\nFinance Report:")
-        print(f"Total Income: {total_income}")
-        print(f"Total Expense: {total_expense}")
-        print(f"Net Balance: {total_income + total_expense}")
+        print(f"Общий доход: {total_income}")
+        print(f"Общий расход: {total_expense}")
+        print(f"Чистый доход: {total_income + total_expense}")
 
-    def export_to_csv(self, file_name="finance.csv"):
-        with open(file_name, 'w', newline='') as file:
-            writer = csv.DictWriter(file, fieldnames=["id", "amount", "category", "date", "description"])
-            writer.writeheader()
-            for record in self.records:
-                writer.writerow(record.to_dict())
-        print(f"Finance records exported to {file_name}.")
-
-    def import_from_csv(self, file_name="finance.csv"):
-        with open(file_name, 'r') as file:
+    def import_from_csv(self, csv_file):
+        with open(csv_file, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                self.add_record(float(row["amount"]), row["category"], row["date"], row["description"])
-        print(f"Finance records imported from {file_name}.")
+                record = FinanceRecord(
+                    id=int(row['ID']),
+                    amount=float(row['Amount']),
+                    category=row['Category'],
+                    date=row['Date'],
+                    description=row['Description']
+                )
+                record.add_record()
+        print("Фин. записи импортированы из CSV")
+
+    def export_to_csv(self, csv_file):
+        records = self.load_records()
+        with open(csv_file, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["ID", "Amount", "Category", "Date", "Description"])
+            for record in records:
+                writer.writerow([record['id'], record['amount'], record['category'], record['date'], record['description']])
+        print("Фин. записи экспортированы в CSV")
+
+
+record1 = FinanceRecord(1, 1000, "Доход", "2023-10-01", "Зарплата")
+record1.add_record()
+record2 = FinanceRecord(2, -200, "Расход", "2023-10-02", "Покупка продуктов")
+record2.add_record()
+
+print("Все записи:")
+record1.view_records()
+
+print("\nЗаписи с 2023-10-01 по 2023-10-02:")
+record1.view_records(datetime(2023, 10, 1), datetime(2023, 10, 2))
+
+print("\nОтчет за период с 2023-10-01 по 2023-10-02:")
+record1.generate_report(datetime(2023, 10, 1), datetime(2023, 10, 2))
+
+record1.export_to_csv("finance_records.csv")
+record1.import_from_csv("finance_records.csv")
