@@ -86,20 +86,3 @@ class Note:
             print("CSV-файл не найден.")
 
 
-note1 = Note(1, "Первая заметка", "Содержимое первой заметки.")
-note1.new_note()
-note2 = Note(2, "Вторая заметка", "Содержимое второй заметки.")
-note2.new_note()
-note1.see_all_notes()
-print(note1.info_note(1))
-note1.change_note(1, content="Обновленное содержимое первой заметки.")
-note1.see_all_notes()
-print()
-print(note2.info_note(2))
-note1.del_info(2)
-note1.see_all_notes()
-note1.import_to_csv("notes.csv")
-note1.export_from_csv("notes.csv")
-note1.del_info(1)
-note1.del_info(1)
-

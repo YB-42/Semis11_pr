@@ -98,19 +98,5 @@ class Task:
             print("CSV-файл не найден.")
 
 
-task1 = Task(1, "Первая задача", "Описание первой задачи.")
-task1.new_task()
-task2 = Task(2, "Вторая задача", "Описание второй задачи.", priority = 'Сложный')
-task2.new_task()
-task1.all_tasks()
-task1.task_is_done(1)
-task1.edit_task(1, description="Обновленное описание первой задачи.")
-task1.all_tasks()
-task1.del_task(2)
-task1.del_task(1)
-task1.del_task(1)
-task1.all_tasks()
-
-
 
 

@@ -76,19 +76,3 @@ class Contact:
                     print(f"ID: {row[0]}, Name: {row[1]}, Phone: {row[2]}, Email: {row[3]}")
         except FileNotFoundError:
             print("CSV-файл не найден")
-
-contact1 = Contact(1, "Иван Иванов", "+123456789", "ivan@example.com")
-contact1.new_cont()
-contact2 = Contact(2, "Петр Петров", "+987654321", "petr@example.com")
-contact2.new_cont()
-
-found_contact = contact1.find_contact("Иван Иванов")
-print(found_contact)
-
-contact1.edit_contact(1, phone="+111111111")
-contact1.del_contact(2)
-contact1.del_contact(1)
-contact1.del_contact(1)
-
-contact1.import_cont_to_csv("contacts.csv")
-contact1.export_to_csv("contacts.csv")

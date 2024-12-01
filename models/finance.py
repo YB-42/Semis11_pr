@@ -92,21 +92,3 @@ class FinanceRecord:
             for record in records:
                 writer.writerow([record['id'], record['amount'], record['category'], record['date'], record['description']])
         print("Фин. записи экспортированы в CSV")
-
-
-record1 = FinanceRecord(1, 1000, "Доход", "2023-10-01", "Зарплата")
-record1.add_record()
-record2 = FinanceRecord(2, -200, "Расход", "2023-10-02", "Покупка продуктов")
-record2.add_record()
-
-print("Все записи:")
-record1.view_records()
-
-print("\nЗаписи с 2023-10-01 по 2023-10-02:")
-record1.view_records(datetime(2023, 10, 1), datetime(2023, 10, 2))
-
-print("\nОтчет за период с 2023-10-01 по 2023-10-02:")
-record1.generate_report(datetime(2023, 10, 1), datetime(2023, 10, 2))
-
-record1.export_to_csv("finance_records.csv")
-record1.import_from_csv("finance_records.csv")
