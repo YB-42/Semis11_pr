@@ -63,6 +63,13 @@ class FinanceRecord:
         print(f"Общий расход: {total_expense}")
         print(f"Чистый доход: {total_income + total_expense}")
 
+    def del_record(self, id):
+        records = self.load_records()
+        records = [record for record in records if record['id'] != id]
+        with open(FINANCE_FILE, 'w') as file:
+            json.dump(records, file, indent=4)
+        print(f'Запись с ID {id} удален')
+
     def import_from_csv(self, csv_file):
         with open(csv_file, 'r') as file:
             reader = csv.DictReader(file)
